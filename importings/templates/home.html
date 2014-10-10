@@ -1,9 +1,22 @@
 <html>
 {% load staticfiles %}
 <head>
+<link href="{% static '' %}style.css" rel="stylesheet" type="text/css" />
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+<script src="{% static '' %}script.js"></script>
+<script>
+$(document).ready(function(){
+  $("#ok").click(function(){
+    $("#div1").load("import/accounts?filename=accounts.csv");
+  });
+});
+</script>
 </head>
 <body>
 <a href="home.html"><img src="{% static '' %}parent.jpg" alt="" title="" border="0"></a>
-{{shirts}}dsfwdsfasd
+{{shirts}}
+<input type="button" id="ok">
+<div id="div1">
+</div>
 </body>
 </html>
