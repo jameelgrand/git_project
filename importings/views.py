@@ -21,6 +21,7 @@ def Accounts(request):
 	url=os_path+"/importings/static/files/"+filename_path
 	#import pdb;pdb.set_trace()
 	#importings/static/files/
+	db_object=dbcred.objects.get(pk=db)
 	error_flag=False
 	customer_id=1000
 	status="Active"
@@ -28,9 +29,10 @@ def Accounts(request):
 	audit_date=datetime.now()
 	filename=url
 
-	db_creds = {"database":"integradb1", "user":"postgres", "password":"postgres", "host":"localhost", "port":"5433"}
+	#db_creds = {"database":"integradb1", "user":"postgres", "password":"postgres", "host":"localhost", "port":"5433"}
+	db_creds = {"database":db_object.database, "user":db_object.user, "password":db_object.password, "host":db_object.host, "port":db_object.port}
 	con = pg.connect(**db_creds)
-	engine = create_engine('postgresql+psycopg2://postgres:postgres@localhost:5433/integradb1')
+	engine = create_engine('postgresql+psycopg2://'+db_object.user+':'+db_object.password+'@'+db_object.host+':'+db_object.port+'/'+db_object.database)
 	df=pd.read_csv(filename,header=0, dtype=object)
 	df.to_sql('temp_accounts',engine,index=False)
 	cur = con.cursor()
