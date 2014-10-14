@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.http import HttpResponse
 import psycopg2 as pg
 import pandas as pd
 import pandas.io.sql as psql
@@ -7,6 +8,7 @@ from datetime import datetime
 from django.templatetags.static import static
 import os
 from importings.forms import dbform,fileform
+from importings.models import dbcred,File
 # Create your views here.
 def Home(request):
 	form_db = dbform() # A model form
@@ -14,10 +16,11 @@ def Home(request):
 	return render(request, 'home.html', {'form_db':form_db,'form_file':form_file})
 def Accounts(request):
 	filename_path=request.GET['filename']
+	db=request.GET['db']
 	os_path=os.getcwd()
 	url=os_path+"/importings/static/files/"+filename_path
 	#import pdb;pdb.set_trace()
-	
+	#importings/static/files/
 	error_flag=False
 	customer_id=1000
 	status="Active"
@@ -35,6 +38,7 @@ def Accounts(request):
 	success=True
 	required_fields=True
 	no_errors=False
+	return_string=""
 	try:
 		cur.execute("SELECT routing_main,account_nm,account_number,account_type,currency,description_short from temp_accounts")
 		cur.execute("SELECT * FROM temp_accounts  where upper(account_nm) in (SELECT account_nm FROM bnk_adm_accounts)")
@@ -42,13 +46,18 @@ def Accounts(request):
 		if k is not None:
 			no_duplicates=False
 			print "ERROR:these rows contain duplicate account_nm values"
+			return_string+= "<br>ERROR:these rows contain duplicate account_nm values<br>"
 			print k
+			return_string+=str(k)
 			for record in cur:
 					print record
+					return_string+= "<br>"+str(record)
 			
 	except Exception,e:
 		print "missed some required fields"
+		return_string+="<br>missed some required fields"
 		print e
+		return_string+="<br>"+str(e)
 		required_fields=False
 		
 	if required_fields and no_duplicates:
@@ -57,6 +66,7 @@ def Accounts(request):
 			#cur.execute('DROP TABLE temp_accounts')
 		except Exception,e:
 			print e
+			return_string+="<br>"+str(e)
 			success=False
 		
 		if success:
@@ -67,22 +77,28 @@ def Accounts(request):
 				no_errors=True
 			else:
 				print "failed to load these rows in your CSV file"
+				return_string+="<br>failed to load these rows in your CSV file"
 				cur.execute("SELECT *  FROM temp_accounts t where t.routing_main not in (SELECT routing_main from bnk_adm_banks) ")	
 				
 				for record in cur:
 					print "routing_main does not exist"
+					return_string+="<br>routing_main does not exist"
 					print record
+					return_string+="<br>"+str(record)
 				cur.execute("SELECT *  FROM temp_accounts t where t.currency not in (select currency from gbl_company) ")	
 				
 				for record in cur:
 					print "currency does not exist"
+					return_string+="<br>currency does not exist"
 					print record
+					return_string+="<br>"+str(record)
 
 
 			if no_errors or error_flag:
 				con.commit()
 				if no_errors:
 					print "All records imported successfully"
+					return_string+="<br>All records imported successfully"
 		else:
 			pass
 
@@ -92,4 +108,4 @@ def Accounts(request):
 	cur.execute('DROP TABLE temp_accounts')
 	con.commit()
 	con.close()
-	return render(request, 'home.html', {'shirts': filename_path})
+	return HttpResponse(return_string)

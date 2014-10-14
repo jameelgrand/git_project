@@ -7,7 +7,9 @@
 <script>
 $(document).ready(function(){
   $("#ok").click(function(){
-    $("#div1").load("import/accounts?filename=accounts.csv");
+  	var db=$('#id_dbcreds').val();
+  	var file=$('#id_file_active :selected').text();
+    $("#div1").load("import/accounts?filename="+file+"&db="+db);
   });
 });
 </script>
