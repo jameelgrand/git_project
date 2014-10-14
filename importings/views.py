@@ -6,11 +6,12 @@ from sqlalchemy import create_engine
 from datetime import datetime
 from django.templatetags.static import static
 import os
+from importings.forms import dbform,fileform
 # Create your views here.
 def Home(request):
-    shirtss = static('files/django.jpg')
-    url = static('x.jpg')
-    return render(request, 'home.html', {'shirts': shirtss})
+	form_db = dbform() # A model form
+	form_file=fileform()
+	return render(request, 'home.html', {'form_db':form_db,'form_file':form_file})
 def Accounts(request):
 	filename_path=request.GET['filename']
 	os_path=os.getcwd()

@@ -16,3 +16,7 @@ class File(models.Model):
     file =  models.FileField(upload_to='importings/static/files/')
     def __unicode__(self):
         return self.file.name
+class activedb(models.Model):
+	dbcreds=models.ForeignKey(dbcred)
+class activefile(models.Model):
+	file_active=models.ForeignKey(File)

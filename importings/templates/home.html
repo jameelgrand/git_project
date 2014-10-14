@@ -13,9 +13,10 @@ $(document).ready(function(){
 </script>
 </head>
 <body>
-<a href="home.html"><img src="{% static '' %}parent.jpg" alt="" title="" border="0"></a>
-{{shirts}}
-<input type="button" id="ok">
+<a href="/admin"><img src="{% static '' %}parent.jpg" alt="" title="" border="0" width="100" height="100"></a>
+{{ form_file.as_p}}
+{{ form_db.as_p}}
+<input type="button" id="ok" value="proceed">
 <div id="div1">
 </div>
 </body>
