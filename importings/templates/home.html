@@ -7,9 +7,19 @@
 <script>
 $(document).ready(function(){
   $("#ok").click(function(){
+  	$("#div1").html("loading......");
   	var db=$('#id_dbcreds').val();
   	var file=$('#id_file_active :selected').text();
-    $("#div1").load("import/accounts?filename="+file+"&db="+db);
+  	//var file=$('#id_file_active').val();
+  	if(db!="" && file!="---------"){
+  		
+  		$("#div1").load("import/accounts?filename="+file+"&db="+db);
+  	}
+  	else{
+  		$("#div1").html("Select db creds and file then try again");
+  	}
+  	
+    
   });
 });
 </script>
